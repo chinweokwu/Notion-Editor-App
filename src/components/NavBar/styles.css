@@ -1,0 +1,23 @@
+.navbar {
+  margin: 25px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.left-nav {
+  color: grey;
+}
+
+.nav-link {
+  padding: 0 10px 0 10px;
+}
+.navleft-link {
+  padding: 0 25px 0 25px;
+}
+.left-content{
+  display: flex;
+}
+
+.publish {
+  color:blue
+}
