@@ -12,8 +12,8 @@ const Header = () => {
       <div className='header-box'>
         <div >
           <span className='p-tag'><TbLetterP fontSize="1em"/></span><TbMinusVertical/>
-          <span  style={{paddingRight:'5px'}}><FiClock/> <span>0 min</span></span><TbMinusVertical/>
-          <FaUserCircle/> <TbMinusVertical/>
+          <span  style={{paddingRight:'5px'}}><FiClock>10mins</FiClock></span><TbMinusVertical/>
+          <FaUserCircle style={{ color:'red'}}/> <TbMinusVertical/>
           <FiArrowDownLeft/>
         </div>
         <div>
