@@ -63,7 +63,7 @@ const ContextMenu = (props) => {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  });
+  },[handleKeyDown, command]);
 
   return (
     <div className="context-menu" style={positionAttributes}>
