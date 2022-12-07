@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback} from "react";
+import React, { useState, useEffect} from "react";
 import { matchSorter } from "match-sorter";
 import {RxText} from 'react-icons/rx'
 
@@ -25,7 +25,6 @@ const ContextMenu = (props) => {
   const positionAttributes = { top: y, left: x };
 
   const handleKeyDown = (e) => {
-    const{onSelect, close} = props
     switch (e.key) {
       case "Enter":
         e.preventDefault();
