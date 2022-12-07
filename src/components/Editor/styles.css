@@ -1,0 +1,107 @@
+/* EDITOR BLOCK*/
+.editor-block {
+  margin: 0.25rem 0;
+  padding: 0.5rem;
+  background: #fafafa;
+  border-radius: 0.25rem;
+}
+
+.editor-block:hover {
+  background: #f8f8f8;
+  outline-color: #f5f6fb;
+}
+
+.editor-block:focus {
+  background: #f5f6fb;
+}
+
+/* CONTEXT MENU */
+.context-menu {
+  position: absolute;
+  width: 6.875rem;
+  height: 17rem;
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.context-menu .menu {
+  background: #fafafa;
+  box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px,
+    rgba(15, 15, 15, 0.1) 0px 3px 6px, rgba(15, 15, 15, 0.2) 0px 9px 24px;
+  border-radius: 0.5rem;
+  height: 573px;
+  width: 250px;
+}
+
+.context-menu .menu div[role="button"] {
+  font-size: 0.875rem;
+  font-weight: 400;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid f5f6fb;
+}
+
+.context-menu .menu div[role="button"]:hover {
+  background: #f5f6fb;
+  cursor: pointer;
+}
+
+.context-menu .menu div[role="button"]:last-of-type {
+  border-bottom: none;
+}
+
+.context-menu .menu div[role="button"]:hover,
+.context-menu .menu div[role="button"]:focus {
+  background: #f5f6fb;
+  cursor: pointer;
+}
+
+.context-menu .menu div[role="button"]:first-of-type:hover,
+.context-menu .menu div[role="button"]:first-of-type:focus {
+  border-top-right-radius: 0.5rem;
+  border-top-left-radius: 0.5rem;
+}
+
+.context-menu .menu div[role="button"]:last-of-type:hover,
+.context-menu .menu div[role="button"]:last-of-type:focus {
+  border-bottom-right-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+
+.contextmenu-add {
+  padding-left: 10px;
+  font-size: 20px;
+}
+
+.contextmenu-filter {
+  padding-left: 10px;
+  font-size: 12px;
+  margin-top: -8px;
+  color: grey;
+}
+
+.contextmenu-keyword {
+  padding-left: 10px;
+  color: grey;
+}
+
+.contextmenu-text {
+  display: flex;
+}
+
+.contextmenu-item {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 16px;
+}
+
+.contextmenu-shortcut {
+  color: grey;
+  font-size: 14px;
+}
+
+.Selected {
+  background: #f5f6fb;
+  border-radius: 0.5rem;
+}

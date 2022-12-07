@@ -1,0 +1,26 @@
+.header-box {
+  border: 1px solid lightgrey;
+  height: 46px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8px 0 8px;
+  align-items: center;
+}
+.header-text {
+  font-size: 31px;
+  line-height: 0;
+  margin-top: 58px;
+}
+
+.header-para {
+  font-size: 18px;
+  line-height: 1.5;
+  padding-top: 7px;
+  color: grey;
+}
+
+.p-tag {
+  background-color: aquamarine;
+  color: green;
+  padding-top: 11px;
+}
