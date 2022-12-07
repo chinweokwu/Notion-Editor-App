@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { matchSorter } from "match-sorter";
+import {RxText} from 'react-icons/rx'
 
-const MENU_HEIGHT = 150;
+const MENU_HEIGHT = -25;
 const allowedTags = [
   {
     id: "page-title",
@@ -66,6 +67,10 @@ const ContextMenu = (props) => {
   return (
     <div className="context-menu" style={positionAttributes}>
       <div className="menu">
+        <p className="contextmenu-add">Add Block</p>
+        <p className="contextmenu-filter">Keep typing to filter, or escaping to exit </p>
+        <p className="contextmenu-keyword">Filtering keyword </p>
+      
         {items.map((item, key) => {
           const isSelected = items.indexOf(item) === selectedItem;
           return (
@@ -76,7 +81,15 @@ const ContextMenu = (props) => {
               tabIndex="0"
               onClick={() => props.onSelect(item.tag)}
             >
-              {item.label}
+              <div className="contextmenu-text">
+                <div>
+                  <RxText style={{fontSize:'38px', color:'grey', paddingRight:'10px' }}/> 
+                </div>
+                <div>
+                  <p className="contextmenu-item">{item.label}</p>
+                  <span className="contextmenu-shortcut">Shortcut: type # + space</span>
+                </div>
+              </div>
             </div>
           );
         })}

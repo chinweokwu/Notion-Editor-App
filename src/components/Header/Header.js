@@ -11,15 +11,15 @@ const Header = () => {
     <div className='header-container'>
       <div className='header-box'>
         <div >
-          <span className='p-tag'><TbLetterP fontSize="1em"/></span><TbMinusVertical/>
-          <span  style={{paddingRight:'5px'}}><FiClock>10mins</FiClock></span><TbMinusVertical/>
-          <FaUserCircle style={{ color:'red'}}/> <TbMinusVertical/>
-          <FiArrowDownLeft/>
+          <span className='p-tag'><TbLetterP fontSize="20px"/></span><TbMinusVertical style={{color: 'grey',fontSize: "20px"}}/>
+          <span style={{paddingRight:'5px'}}><FiClock fontSize="20px"></FiClock> 10mins</span><TbMinusVertical style={{color: 'grey',fontSize: "20px"}}/>
+          <FaUserCircle style={{ color:'red', fontSize:"20px"}}/> <TbMinusVertical style={{color: 'grey', fontSize: "20px"}}/>
+          <FiArrowDownLeft fontSize="20px"/>
         </div>
         <div>
-          <span><IoMdCheckmarkCircleOutline style={{paddingRight:'3px'}}/></span>
-          <span><TbCloud style={{paddingRight:'3px', color: 'green'}}/></span>
-          <span><TbDotsVertical/></span>
+          <span><IoMdCheckmarkCircleOutline style={{paddingRight:'15px', fontSize: '20px'}}/></span>
+          <span><TbCloud style={{paddingRight:'15px', color: 'green', fontSize: '20px'}}/></span>
+          <span><TbDotsVertical style={{fontSize: '20px'}}/></span>
         </div>
       </div>
       <div>
