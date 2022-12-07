@@ -24,18 +24,6 @@ const ContextMenu = (props) => {
   const y = props.position.y - MENU_HEIGHT;
   const positionAttributes = { top: y, left: x };
 
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    const comd = setCommand(command)
-    if (command !== comd) {
-      const items = matchSorter(allowedTags, command, { keys: ["tag"] });
-      setitems(items);
-    }
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [command]);
-
   const handleKeyDown = (e) => {
     switch (e.key) {
       case "Enter":
@@ -65,6 +53,18 @@ const ContextMenu = (props) => {
     }
   };
 
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    const comd = setCommand(command)
+    if (command !== comd) {
+      const items = matchSorter(allowedTags, command, { keys: ["tag"] });
+      setitems(items);
+    }
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [command]);
+  
   return (
     <div className="context-menu" style={positionAttributes}>
       <div className="menu">
