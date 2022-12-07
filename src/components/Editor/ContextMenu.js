@@ -26,7 +26,8 @@ const ContextMenu = (props) => {
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
-    if (command) {
+    const comd = setCommand(command)
+    if (command !== comd) {
       const items = matchSorter(allowedTags, command, { keys: ["tag"] });
       setitems(items);
     }
