@@ -24,7 +24,8 @@ const ContextMenu = (props) => {
   const y = props.position.y - MENU_HEIGHT;
   const positionAttributes = { top: y, left: x };
 
-  const handleKeyDown = useCallback((e) => {
+  const handleKeyDown = (e) => {
+    const{onSelect, close} = props
     switch (e.key) {
       case "Enter":
         e.preventDefault();
@@ -51,7 +52,7 @@ const ContextMenu = (props) => {
         setCommand(command + e.key);
         break;
     }
-  },[command]);
+  };
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
@@ -63,7 +64,8 @@ const ContextMenu = (props) => {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  },[handleKeyDown,command]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[command]);
 
   return (
     <div className="context-menu" style={positionAttributes}>
