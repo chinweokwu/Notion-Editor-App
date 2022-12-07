@@ -54,14 +54,14 @@ const ContextMenu = (props) => {
   },[command]);
 
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown());
+    document.addEventListener("keydown", handleKeyDown);
     const comd = setCommand(command)
     if (command !== comd) {
       const items = matchSorter(allowedTags, command, { keys: ["tag"] });
       setitems(items);
     }
     return () => {
-      document.removeEventListener("keydown", handleKeyDown());
+      document.removeEventListener("keydown", handleKeyDown);
     };
   },[handleKeyDown,command]);
 
