@@ -22,7 +22,5 @@
 .p-tag {
   background-color: aquamarine;
   color: green;
-  border: none;
-  font-size: 17px;
-  width: 20px;
+  padding-top: 11px;
 }

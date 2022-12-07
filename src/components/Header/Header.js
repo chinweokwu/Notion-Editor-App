@@ -5,15 +5,24 @@ import {FiClock,FiArrowDownLeft} from 'react-icons/fi'
 import {FaUserCircle} from 'react-icons/fa';
 import {IoMdCheckmarkCircleOutline} from 'react-icons/io'
 import { TbMinusVertical } from 'react-icons/tb'
-
+import { MdTimer10 } from 'react-icons/md'
 const Header = () => {
   return (
     <div className='header-container'>
       <div className='header-box'>
         <div >
-          <span className='p-tag'><TbLetterP fontSize="20px"/></span><TbMinusVertical style={{color: 'grey',fontSize: "20px"}}/>
-          <span style={{paddingRight:'5px'}}><FiClock fontSize="20px"></FiClock> 10mins</span><TbMinusVertical style={{color: 'grey',fontSize: "20px"}}/>
-          <FaUserCircle style={{ color:'red', fontSize:"20px"}}/> <TbMinusVertical style={{color: 'grey', fontSize: "20px"}}/>
+          <span className='p-tag'>
+            <TbLetterP fontSize="20px"/>
+          </span>
+          <TbMinusVertical style={{color: 'grey',fontSize: "20px"}}/>
+          <span style={{paddingRight:'5px'}}>
+            <FiClock fontSize="20px"/>
+          </span>
+          <span>
+            <MdTimer10 fontSize="20px"/>
+          </span>
+          <TbMinusVertical style={{color: 'grey',fontSize: "20px"}}/>
+          <FaUserCircle style={{ color:'red', fontSize:"20px"}}/><TbMinusVertical style={{color: 'grey', fontSize: "20px"}}/>
           <FiArrowDownLeft fontSize="20px"/>
         </div>
         <div>
