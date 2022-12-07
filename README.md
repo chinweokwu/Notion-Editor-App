@@ -6,7 +6,7 @@ A Notion-like editor, but only the H1 heading component.
 So it’s not much of an editor, but rather an app that lets you write anywhere 
 and convert your content into H1. 
 
-### Project Link:
+### Project Link: https://jazzy-crepe-68887e.netlify.app/
 
 
 ## Authors
