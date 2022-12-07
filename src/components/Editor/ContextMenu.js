@@ -15,7 +15,34 @@ const allowedTags = [
     label: "Paragraph"
   }
 ];
-
+const handleKeyDown = (e) => {
+  switch (e.key) {
+    case "Enter":
+      e.preventDefault();
+      props.onSelect(items[selectedItem].tag);
+      break;
+    case "Backspace":
+      if (!command) props.close();
+      setCommand(command.substring(0, command.length - 1));
+      break;
+    case "ArrowUp":
+      e.preventDefault();
+      const prevSelected =
+        selectedItem === 0 ? items.length - 1 : selectedItem - 1;
+      setSelectdItem(prevSelected);
+      break;
+    case "ArrowDown":
+    case "Tab":
+      e.preventDefault();
+      const nextSelected =
+        selectedItem === items.length - 1 ? 0 : selectedItem + 1;
+      setSelectdItem(nextSelected);
+      break;
+    default:
+      setCommand(command + e.key);
+      break;
+  }
+};
 const ContextMenu = (props) => {
   const [command, setCommand] = useState("");
   const [items, setitems] = useState(allowedTags);
@@ -23,35 +50,6 @@ const ContextMenu = (props) => {
   const x = props.position.x;
   const y = props.position.y - MENU_HEIGHT;
   const positionAttributes = { top: y, left: x };
-
-  const handleKeyDown = (e) => {
-    switch (e.key) {
-      case "Enter":
-        e.preventDefault();
-        props.onSelect(items[selectedItem].tag);
-        break;
-      case "Backspace":
-        if (!command) props.close();
-        setCommand(command.substring(0, command.length - 1));
-        break;
-      case "ArrowUp":
-        e.preventDefault();
-        const prevSelected =
-          selectedItem === 0 ? items.length - 1 : selectedItem - 1;
-        setSelectdItem(prevSelected);
-        break;
-      case "ArrowDown":
-      case "Tab":
-        e.preventDefault();
-        const nextSelected =
-          selectedItem === items.length - 1 ? 0 : selectedItem + 1;
-        setSelectdItem(nextSelected);
-        break;
-      default:
-        setCommand(command + e.key);
-        break;
-    }
-  };
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
@@ -63,7 +61,7 @@ const ContextMenu = (props) => {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  },[handleKeyDown, command]);
+  },[handleKeyDown,command]);
 
   return (
     <div className="context-menu" style={positionAttributes}>
