@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback} from "react";
 import { matchSorter } from "match-sorter";
 import {RxText} from 'react-icons/rx'
 
@@ -15,34 +15,7 @@ const allowedTags = [
     label: "Paragraph"
   }
 ];
-const handleKeyDown = (e) => {
-  switch (e.key) {
-    case "Enter":
-      e.preventDefault();
-      props.onSelect(items[selectedItem].tag);
-      break;
-    case "Backspace":
-      if (!command) props.close();
-      setCommand(command.substring(0, command.length - 1));
-      break;
-    case "ArrowUp":
-      e.preventDefault();
-      const prevSelected =
-        selectedItem === 0 ? items.length - 1 : selectedItem - 1;
-      setSelectdItem(prevSelected);
-      break;
-    case "ArrowDown":
-    case "Tab":
-      e.preventDefault();
-      const nextSelected =
-        selectedItem === items.length - 1 ? 0 : selectedItem + 1;
-      setSelectdItem(nextSelected);
-      break;
-    default:
-      setCommand(command + e.key);
-      break;
-  }
-};
+
 const ContextMenu = (props) => {
   const [command, setCommand] = useState("");
   const [items, setitems] = useState(allowedTags);
@@ -51,15 +24,44 @@ const ContextMenu = (props) => {
   const y = props.position.y - MENU_HEIGHT;
   const positionAttributes = { top: y, left: x };
 
+  const handleKeyDown = useCallback((e) => {
+    switch (e.key) {
+      case "Enter":
+        e.preventDefault();
+        props.onSelect(items[selectedItem].tag);
+        break;
+      case "Backspace":
+        if (!command) props.close();
+        setCommand(command.substring(0, command.length - 1));
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        const prevSelected =
+          selectedItem === 0 ? items.length - 1 : selectedItem - 1;
+        setSelectdItem(prevSelected);
+        break;
+      case "ArrowDown":
+      case "Tab":
+        e.preventDefault();
+        const nextSelected =
+          selectedItem === items.length - 1 ? 0 : selectedItem + 1;
+        setSelectdItem(nextSelected);
+        break;
+      default:
+        setCommand(command + e.key);
+        break;
+    }
+  },[command]);
+
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown());
     const comd = setCommand(command)
     if (command !== comd) {
       const items = matchSorter(allowedTags, command, { keys: ["tag"] });
       setitems(items);
     }
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown());
     };
   },[handleKeyDown,command]);
 
