@@ -7,8 +7,6 @@ So it’s not much of an editor, but rather an app that lets you write anywhere
 and convert your content into H1. 
 
 ### Project Link: https://jazzy-crepe-68887e.netlify.app/
-### Doc Link: https://docs.google.com/document/d/161n6pubqHfmIiDVA6dOlhqUZlpQiTfG0_8hUTHAAEzc/edit#
-
 
 ## Authors
 
