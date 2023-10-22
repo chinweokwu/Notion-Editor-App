@@ -4,6 +4,7 @@
   padding: 0.5rem;
   background: #fafafa;
   border-radius: 0.25rem;
+  width: inherit;
 }
 
 .editor-block:hover {
@@ -13,6 +14,34 @@
 
 .editor-block:focus {
   background: #f5f6fb;
+}
+
+.block-container {
+  display: flex;
+  gap: 5px;
+  width: 100%;
+}
+.add-block-button{
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: gray;
+}
+.add-block-button:hover{
+  background-color: rgb(242, 242, 242);
+}
+
+.drag-icon {
+  color: gray;
+  cursor: pointer;
+  font-size: 1.5rem;
+
+  padding: 5px;
+}
+
+.drag-icon:hover {
+  background-color: rgb(242, 242, 242);
+
 }
 
 /* CONTEXT MENU */

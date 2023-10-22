@@ -1,130 +1,193 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import ContentEditable from "react-contenteditable";
 import "./styles.css";
 import { caretCoordinates, caretToEnd } from "../../Utilis/helpers";
 import ContextMenu from "./ContextMenu";
-
+import { BsPlusLg } from "react-icons/bs";
+import {AiOutlineAppstore} from "react-icons/ai";
 const CMD_KEY = "/";
+const blockPlaceholders = {
+  p: "Enter your paragraph text...",
+  h1: "Enter your page title...",
+  h2: "Enter your heading...",
+  h3: "Enter your subheading...",
+  i: "Enter your italic text...",
+  table: "Enter your table..."
+};
 
-class EditorBlock extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onChangeHandler = this.onChangeHandler.bind(this);
-    this.onKeyDownHandler = this.onKeyDownHandler.bind(this);
-    this.onKeyUpHandler = this.onKeyUpHandler.bind(this);
-    this.openSelectMenuHandler = this.openSelectMenuHandler.bind(this);
-    this.closeSelectMenuHandler = this.closeSelectMenuHandler.bind(this);
-    this.tagSelectionHandler = this.tagSelectionHandler.bind(this);
-    this.contentEditable = React.createRef();
-    this.state = {
-      htmlBackup: null,
-      html: "",
-      tag: "p",
-      previousKey: "",
-      selectMenuIsOpen: false,
-      selectMenuPosition: {
-        x: null,
-        y: null
-      }
-    };
-  }
+const EditorBlock1 = (props) => {
+  const contentEditable = useRef(null);
+  const [placeholder, setPlaceholder] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
 
-  componentDidMount() {
-    this.setState({ html: this.props.html, tag: this.props.tag });
-  }
+  const [state, setState] = useState({
+    html: props.html || "",
+    tag: props.tag,
+    previousKey: "",
+    selectMenuIsOpen: false,
+    selectMenuPosition: {
+      x: null,
+      y: null,
+    },
+  });
 
-  componentDidUpdate(prevProps, prevState) {
-    const htmlChanged = prevState.html !== this.state.html;
-    const tagChanged = prevState.tag !== this.state.tag;
-    if (htmlChanged || tagChanged) {
-      this.props.updatePage({
-        id: this.props.id,
-        html: this.state.html,
-        tag: this.state.tag
-      });
-    }
-  }
+  useEffect(() => {
+    contentEditable.current.focus();
+  }, []);
 
-  onChangeHandler(e) {
-    this.setState({ html: e.target.value });
-  }
+  const onDragStart = (e) => {
+    e.dataTransfer.setData("text/plain", ""); // Required for Firefox
+    e.dataTransfer.setData("blockId", props.id); // Set the block ID for identifying the block being dragged
+    setIsDragging(true);
+  };
 
-  onKeyDownHandler(e) {
+  const onDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  const onDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    const droppedBlockId = e.dataTransfer.getData("blockId");
+    
+    // Reorder the blocks based on the drag-and-drop action
+    props.recorderBlocks(droppedBlockId, props.id);
+  };
+
+  const onKeyUpHandler = (e) => {
     if (e.key === CMD_KEY) {
-      this.setState({ htmlBackup: this.state.html });
+      openSelectMenuHandler();
     }
+  };
+
+  const openSelectMenuHandler = () => {
+    const { x, y } = caretCoordinates();
+    setState((prevState) => ({
+      ...prevState,
+      selectMenuIsOpen: true,
+      selectMenuPosition: { x, y },
+    }));
+    document.addEventListener("click", closeSelectMenuHandler);
+  };
+
+  const closeSelectMenuHandler = () => {
+    setState((prevState) => ({
+      ...prevState,
+      selectMenuIsOpen: false,
+      selectMenuPosition: { x: null, y: null },
+    }));
+    document.removeEventListener("click", closeSelectMenuHandler);
+  };
+
+  const tagSelectionHandler = (tag) => {
+    const updatedHtml = "";
+
+    const selectedPlaceholder = blockPlaceholders[tag] || "";
+    setPlaceholder(selectedPlaceholder);
+
+    setState((prevState) => ({
+      ...prevState,
+      html: updatedHtml,
+      tag,
+    }), () => {
+      contentEditable.current.html = state.html;
+      caretToEnd(contentEditable.current);
+      closeSelectMenuHandler();
+    });
+  };
+
+  const onChangeHandler = (e) => {
+    setState((prevState) => ({ ...prevState, html: e.target.value }));
+  };
+
+  const addBlockHandler = () => {
+    props.addBlock({
+      id: props.id,
+      ref: contentEditable.current,
+    });
+  };
+
+  const onKeyDownHandler = (e) => {
+    if (e.key === CMD_KEY) {
+      contentEditable.current.html = state.html;
+    }
+
     if (e.key === "Enter") {
-      if (this.state.previousKey !== "Shift" && !this.state.selectMenuIsOpen) {
+      if (state.previousKey !== "Shift" && !state.selectMenuIsOpen) {
         e.preventDefault();
-        this.props.addBlock({
-          id: this.props.id,
-          ref: this.contentEditable.current
+        props.addBlock({
+          id: props.id,
+          ref: contentEditable.current,
         });
       }
     }
-    if (e.key === "Backspace" && !this.state.html) {
-      e.preventDefault();
-      this.props.deleteBlock({
-        id: this.props.id,
-        ref: this.contentEditable.current
+
+    if (e.key === "Backspace") {
+      props.deleteBlock({
+        id: props.id,
+        ref: contentEditable.current,
       });
     }
-    this.setState({ previousKey: e.key });
-  }
 
-  onKeyUpHandler(e) {
-    if (e.key === CMD_KEY) {
-      this.openSelectMenuHandler();
+    setState((prevState) => ({ ...prevState, previousKey: e.key }));
+  };
+
+  const onEnterPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      props.addBlock({
+        id: props.id,
+        ref: contentEditable.current,
+      });
+      closeSelectMenuHandler();
     }
-  }
+  };
 
-  openSelectMenuHandler() {
-    const { x, y } = caretCoordinates();
-    this.setState({
-      selectMenuIsOpen: true,
-      selectMenuPosition: { x, y }
-    });
-    document.addEventListener("click", this.closeSelectMenuHandler);
-  }
+  return (
+    <div
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      draggable="true"
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      className={`block-container ${isDragging ? "dragging" : ""}`}
+    >
 
-  closeSelectMenuHandler() {
-    this.setState({
-      htmlBackup: null,
-      selectMenuIsOpen: false,
-      selectMenuPosition: { x: null, y: null }
-    });
-    document.removeEventListener("click", this.closeSelectMenuHandler);
-  }
-
-  tagSelectionHandler(tag) {
-    this.setState({ tag: tag, html: this.state.htmlBackup }, () => {
-      caretToEnd(this.contentEditable.current);
-      this.closeSelectMenuHandler();
-    });
-  }
-
-  render() {
-    return (
-      <>
-        {this.state.selectMenuIsOpen && (
-          <ContextMenu
-            position={this.state.selectMenuPosition}
-            onSelect={this.tagSelectionHandler}
-            close={this.closeSelectMenuHandler}
-          />
-        )}
-        <ContentEditable
-          className="editor-block"
-          innerRef={this.contentEditable}
-          html={this.state.html}
-          tagName={this.state.tag}
-          onChange={this.onChangeHandler}
-          onKeyDown={this.onKeyDownHandler}
-          onKeyUp={this.onKeyUpHandler}
+      {state.selectMenuIsOpen && (
+        <ContextMenu
+          position={state.selectMenuPosition}
+          onSelect={tagSelectionHandler}
+          close={closeSelectMenuHandler}
         />
-      </>
-    );
-  }
-}
+      )}
+      <button onClick={addBlockHandler} className="add-block-button">
+        <BsPlusLg />
+      </button>
 
-export default EditorBlock;
+      <AiOutlineAppstore 
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      draggable="true"
+      className="drag-icon"
+      />
+      <ContentEditable
+        className="editor-block"
+        innerRef={contentEditable}
+        html={state.html}
+        tagName={state.tag}
+        placeholder={placeholder}
+        onChange={onChangeHandler}
+        onKeyDown={(e) => {
+          onKeyDownHandler(e);
+          onEnterPress(e);
+        }}
+        onKeyUp={onKeyUpHandler}
+      />
+    </div>
+  );
+};
+
+export default EditorBlock1;

@@ -33,9 +33,9 @@ const Header = () => {
         </div>
       </div>
       <div>
-        <h2 className='header-text'>Front End Developer Test Project</h2>
+        <h2 className='header-text'>Front End Developer Notion Like Appliction</h2>
         <hr/>
-        <p className='header-para'>Your goal is to make a page that looks exactly like this one , and the ability to create H1 text simply by typing / then 1, then typing text and hitting enter</p>
+        <p className='header-para'>Your goal is to make a notion looks alike appliction , that has the ability to create PageTitle, Heading, SubHeading, Italic and Paragraph text simply by typing / then select, then typing text and hitting enter</p>
       </div>
     </div>
   )
