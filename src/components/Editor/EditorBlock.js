@@ -4,7 +4,7 @@ import "./styles.css";
 import { caretCoordinates, caretToEnd } from "../../Utilis/helpers";
 import ContextMenu from "./ContextMenu";
 import { BsPlusLg } from "react-icons/bs";
-import {AiOutlineAppstore} from "react-icons/ai";
+import { AiOutlineAppstore } from "react-icons/ai";
 const CMD_KEY = "/";
 const blockPlaceholders = {
   p: "Enter your paragraph text...",
@@ -12,7 +12,7 @@ const blockPlaceholders = {
   h2: "Enter your heading...",
   h3: "Enter your subheading...",
   i: "Enter your italic text...",
-  table: "Enter your table..."
+  table: "Enter your table...",
 };
 
 const EditorBlock1 = (props) => {
@@ -52,7 +52,7 @@ const EditorBlock1 = (props) => {
   const onDrop = (e) => {
     e.preventDefault();
     const droppedBlockId = e.dataTransfer.getData("blockId");
-    
+
     // Reorder the blocks based on the drag-and-drop action
     props.recorderBlocks(droppedBlockId, props.id);
   };
@@ -88,15 +88,18 @@ const EditorBlock1 = (props) => {
     const selectedPlaceholder = blockPlaceholders[tag] || "";
     setPlaceholder(selectedPlaceholder);
 
-    setState((prevState) => ({
-      ...prevState,
-      html: updatedHtml,
-      tag,
-    }), () => {
-      contentEditable.current.html = state.html;
-      caretToEnd(contentEditable.current);
-      closeSelectMenuHandler();
-    });
+    setState(
+      (prevState) => ({
+        ...prevState,
+        html: updatedHtml,
+        tag,
+      }),
+      () => {
+        contentEditable.current.html = state.html;
+        caretToEnd(contentEditable.current);
+        closeSelectMenuHandler();
+      }
+    );
   };
 
   const onChangeHandler = (e) => {
@@ -155,7 +158,6 @@ const EditorBlock1 = (props) => {
       onDragEnd={onDragEnd}
       className={`block-container ${isDragging ? "dragging" : ""}`}
     >
-
       {state.selectMenuIsOpen && (
         <ContextMenu
           position={state.selectMenuPosition}
@@ -167,11 +169,11 @@ const EditorBlock1 = (props) => {
         <BsPlusLg />
       </button>
 
-      <AiOutlineAppstore 
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      draggable="true"
-      className="drag-icon"
+      <AiOutlineAppstore
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        draggable="true"
+        className="drag-icon"
       />
       <ContentEditable
         className="editor-block"
