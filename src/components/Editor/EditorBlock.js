@@ -1,130 +1,149 @@
-import React from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import ContentEditable from "react-contenteditable";
-import "./styles.css";
 import { caretCoordinates, caretToEnd } from "../../Utilis/helpers";
 import ContextMenu from "./ContextMenu";
 
 const CMD_KEY = "/";
 
-class EditorBlock extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onChangeHandler = this.onChangeHandler.bind(this);
-    this.onKeyDownHandler = this.onKeyDownHandler.bind(this);
-    this.onKeyUpHandler = this.onKeyUpHandler.bind(this);
-    this.openSelectMenuHandler = this.openSelectMenuHandler.bind(this);
-    this.closeSelectMenuHandler = this.closeSelectMenuHandler.bind(this);
-    this.tagSelectionHandler = this.tagSelectionHandler.bind(this);
-    this.contentEditable = React.createRef();
-    this.state = {
-      htmlBackup: null,
-      html: "",
-      tag: "p",
-      previousKey: "",
-      selectMenuIsOpen: false,
-      selectMenuPosition: {
-        x: null,
-        y: null
-      }
-    };
-  }
+const EditorBlock = ({ html: initialHtml, tag: initialTag, id, index, updatePage, addBlock, deleteBlock }) => {
+  const [html, setHtml] = useState(initialHtml);
+  const [tag, setTag] = useState(initialTag);
+  const [previousKey, setPreviousKey] = useState("");
+  const [selectMenuIsOpen, setSelectMenuIsOpen] = useState(false);
+  const [selectMenuPosition, setSelectMenuPosition] = useState({ x: null, y: null });
+  const contentEditable = useRef(null);
 
-  componentDidMount() {
-    this.setState({ html: this.props.html, tag: this.props.tag });
-  }
+  useEffect(() => {
+    setHtml(initialHtml);
+    setTag(initialTag);
+  }, [initialHtml, initialTag]);
 
-  componentDidUpdate(prevProps, prevState) {
-    const htmlChanged = prevState.html !== this.state.html;
-    const tagChanged = prevState.tag !== this.state.tag;
-    if (htmlChanged || tagChanged) {
-      this.props.updatePage({
-        id: this.props.id,
-        html: this.state.html,
-        tag: this.state.tag
-      });
-    }
-  }
+  useEffect(() => {
+    updatePage({ id, html, tag });
+  }, [html, tag, id, updatePage]);
 
-  onChangeHandler(e) {
-    this.setState({ html: e.target.value });
-  }
+  const applyFormatting = (text) => {
+    let formatted = text;
+    formatted = formatted.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+    formatted = formatted.replace(/_(.*?)_/g, '<em>$1</em>');
+    formatted = formatted.replace(/~(.*?)~/g, '<u>$1</u>');
+    return formatted;
+  };
 
-  onKeyDownHandler(e) {
-    if (e.key === CMD_KEY) {
-      this.setState({ htmlBackup: this.state.html });
-    }
-    if (e.key === "Enter") {
-      if (this.state.previousKey !== "Shift" && !this.state.selectMenuIsOpen) {
-        e.preventDefault();
-        this.props.addBlock({
-          id: this.props.id,
-          ref: this.contentEditable.current
-        });
-      }
-    }
-    if (e.key === "Backspace" && !this.state.html) {
-      e.preventDefault();
-      this.props.deleteBlock({
-        id: this.props.id,
-        ref: this.contentEditable.current
-      });
-    }
-    this.setState({ previousKey: e.key });
-  }
+  const onChangeHandler = useCallback((e) => {
+    const rawText = e.target.value.replace(/<[^>]+>/g, "");
+    const formattedHtml = applyFormatting(rawText);
+    setHtml(formattedHtml);
+  }, []);
 
-  onKeyUpHandler(e) {
-    if (e.key === CMD_KEY) {
-      this.openSelectMenuHandler();
-    }
-  }
-
-  openSelectMenuHandler() {
+  const openSelectMenu = useCallback(() => {
     const { x, y } = caretCoordinates();
-    this.setState({
-      selectMenuIsOpen: true,
-      selectMenuPosition: { x, y }
-    });
-    document.addEventListener("click", this.closeSelectMenuHandler);
-  }
+    setSelectMenuIsOpen(true);
+    setSelectMenuPosition({ x, y });
+  }, []);
 
-  closeSelectMenuHandler() {
-    this.setState({
-      htmlBackup: null,
-      selectMenuIsOpen: false,
-      selectMenuPosition: { x: null, y: null }
-    });
-    document.removeEventListener("click", this.closeSelectMenuHandler);
-  }
+  const closeSelectMenu = useCallback(() => {
+    setSelectMenuIsOpen(false);
+    setSelectMenuPosition({ x: null, y: null });
+  }, []);
 
-  tagSelectionHandler(tag) {
-    this.setState({ tag: tag, html: this.state.htmlBackup }, () => {
-      caretToEnd(this.contentEditable.current);
-      this.closeSelectMenuHandler();
-    });
-  }
+  const tagSelectionHandler = useCallback(
+    (newTag) => {
+      setTag(newTag);
+      setHtml((prev) => {
+        caretToEnd(contentEditable.current);
+        return prev;
+      });
+      closeSelectMenu();
+    },
+    [closeSelectMenu]
+  );
 
-  render() {
-    return (
-      <>
-        {this.state.selectMenuIsOpen && (
-          <ContextMenu
-            position={this.state.selectMenuPosition}
-            onSelect={this.tagSelectionHandler}
-            close={this.closeSelectMenuHandler}
+  const onKeyDownHandler = useCallback(
+    (e) => {
+      if (e.key === CMD_KEY && !selectMenuIsOpen) {
+        e.preventDefault();
+        openSelectMenu();
+      }
+
+      if (e.key === "Enter" && previousKey !== "Shift" && !selectMenuIsOpen) {
+        e.preventDefault();
+        addBlock({ id, ref: contentEditable.current });
+      }
+
+      if (e.key === "Backspace" && !html.replace(/<[^>]+>/g, "") && !selectMenuIsOpen) {
+        e.preventDefault();
+        deleteBlock({ id, ref: contentEditable.current });
+      }
+
+      if ((tag === "ul" || tag === "ol") && e.key === "Tab" && !e.shiftKey) {
+        e.preventDefault();
+        setHtml((prev) => `<li style="margin-left: 20px">${prev.replace(/<\/?li>/g, "")}</li>`);
+      }
+
+      setPreviousKey(e.key);
+    },
+    [html, previousKey, selectMenuIsOpen, addBlock, deleteBlock, id, tag, openSelectMenu]
+  );
+
+  const renderBlock = () => {
+    if (tag === "img") {
+      return <div className="image-placeholder">Image Placeholder</div>;
+    }
+    if (tag === "table") {
+      return (
+        <table className="table-block">
+          <tbody>
+            <tr>
+              <td className="table-cell">Cell 1</td>
+              <td className="table-cell">Cell 2</td>
+            </tr>
+            <tr>
+              <td className="table-cell">Cell 3</td>
+              <td className="table-cell">Cell 4</td>
+            </tr>
+          </tbody>
+        </table>
+      );
+    }
+    if (tag === "todo") {
+      return (
+        <div className="todo-block">
+          <input type="checkbox" />
+          <ContentEditable
+            innerRef={contentEditable}
+            html={html}
+            onChange={onChangeHandler}
+            onKeyDown={onKeyDownHandler}
+            className="editor-block todo-content"
           />
-        )}
-        <ContentEditable
-          className="editor-block"
-          innerRef={this.contentEditable}
-          html={this.state.html}
-          tagName={this.state.tag}
-          onChange={this.onChangeHandler}
-          onKeyDown={this.onKeyDownHandler}
-          onKeyUp={this.onKeyUpHandler}
-        />
-      </>
+        </div>
+      );
+    }
+    return (
+      <ContentEditable
+        innerRef={contentEditable}
+        html={html}
+        tagName={tag}
+        onChange={onChangeHandler}
+        onKeyDown={onKeyDownHandler}
+        className={`editor-block ${tag === "pre" ? "code-block" : ""}`}
+      />
     );
-  }
-}
+  };
+
+  return (
+    <div className="block-wrapper">
+      {selectMenuIsOpen && (
+        <ContextMenu
+          position={selectMenuPosition}
+          onSelect={tagSelectionHandler}
+          close={closeSelectMenu}
+        />
+      )}
+      {renderBlock()}
+    </div>
+  );
+};
 
 export default EditorBlock;

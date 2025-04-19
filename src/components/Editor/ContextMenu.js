@@ -1,130 +1,108 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { matchSorter } from "match-sorter";
-import {RxText} from 'react-icons/rx'
+import {
+  RxText,
+  RxQuote,
+  RxListBullet,
+  RxCode,
+  RxDividerHorizontal,
+  RxImage,
+  RxTable,
+  RxCheckbox,
+} from "react-icons/rx";
+import { BiHeading } from "react-icons/bi";
 
-const MENU_HEIGHT = -25;
 const allowedTags = [
-  {
-    id: "page-title",
-    tag: "h1",
-    label: "Page Title"
-  },
-  {
-    id: "heading",
-    tag: "h2",
-    label: "Heading"
-  },
-  {
-    id: "subheading",
-    tag: "h3",
-    label: "Subheading"
-  },
-  {
-    id: "paragraph",
-    tag: "p",
-    label: "Paragraph"
-  }
+  { id: "page-title", tag: "h1", label: "Page Title", icon: <BiHeading size={26} /> },
+  { id: "heading", tag: "h2", label: "Heading", icon: <BiHeading size={24} /> },
+  { id: "subheading", tag: "h3", label: "Subheading", icon: <BiHeading size={20} /> },
+  { id: "paragraph", tag: "p", label: "Paragraph", icon: <RxText size={22} /> },
+  { id: "blockquote", tag: "blockquote", label: "Blockquote", icon: <RxQuote size={22} /> },
+  { id: "unordered-list", tag: "ul", label: "Unordered List", icon: <RxListBullet size={22} /> },
+  { id: "ordered-list", tag: "ol", label: "Ordered List", icon: <RxListBullet size={22} /> },
+  { id: "todo", tag: "todo", label: "To-Do List", icon: <RxCheckbox size={22} /> },
+  { id: "code", tag: "pre", label: "Code Block", icon: <RxCode size={22} /> },
+  { id: "divider", tag: "hr", label: "Divider", icon: <RxDividerHorizontal size={22} /> },
+  { id: "image", tag: "img", label: "Image", icon: <RxImage size={22} /> },
+  { id: "table", tag: "table", label: "Table", icon: <RxTable size={22} /> },
 ];
 
-class ContextMenu extends React.Component {
-  constructor(props) {
-    super(props);
-    this.keyDownHandler = this.keyDownHandler.bind(this);
-    this.state = {
-      command: "",
-      items: allowedTags,
-      selectedItem: 0
-    };
-  }
+const ContextMenu = ({ position, onSelect, close }) => {
+  const [command, setCommand] = useState("");
+  const [items, setItems] = useState(allowedTags);
+  const [selectedItem, setSelectedItem] = useState(0);
 
-  // Attach a key listener to add any given key to the command
-  componentDidMount() {
-    document.addEventListener("keydown", this.keyDownHandler);
-  }
+  useEffect(() => {
+    const filtered = matchSorter(allowedTags, command, { keys: ["label"] });
+    setItems(filtered.length ? filtered : allowedTags);
+    setSelectedItem(0);
+  }, [command]);
 
-  // Whenever the command changes, look for matching tags in the list
-  componentDidUpdate(prevProps, prevState) {
-    const command = this.state.command;
-    if (prevState.command !== command) {
-      const items = matchSorter(allowedTags, command, { keys: ["tag"] });
-      this.setState({ items: items });
-    }
-  }
+  const handleKeyDown = useCallback(
+    (e) => {
+      switch (e.key) {
+        case "Enter":
+          e.preventDefault();
+          onSelect(items[selectedItem].tag);
+          break;
+        case "Escape":
+          e.preventDefault();
+          close();
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setSelectedItem((prev) => (prev === 0 ? items.length - 1 : prev - 1));
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          setSelectedItem((prev) => (prev === items.length - 1 ? 0 : prev + 1));
+          break;
+        case "Backspace":
+          if (!command) close();
+          else setCommand((prev) => prev.slice(0, -1));
+          break;
+        default:
+          if (e.key.length === 1) setCommand((prev) => prev + e.key.toLowerCase());
+          break;
+      }
+    },
+    [command, items, selectedItem, close, onSelect]
+  );
 
-  componentWillUnmount() {
-    document.removeEventListener("keydown", this.keyDownHandler);
-  }
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
-  keyDownHandler(e) {
-    const items = this.state.items;
-    const selected = this.state.selectedItem;
-    const command = this.state.command;
-
-    switch (e.key) {
-      case "Enter":
-        e.preventDefault();
-        this.props.onSelect(items[selected].tag);
-        break;
-      case "Backspace":
-        if (!command) this.props.close();
-        this.setState({ command: command.substring(0, command.length - 1) });
-        break;
-      case "ArrowUp":
-        e.preventDefault();
-        const prevSelected = selected === 0 ? items.length - 1 : selected - 1;
-        this.setState({ selectedItem: prevSelected });
-        break;
-      case "ArrowDown":
-      case "Tab":
-        e.preventDefault();
-        const nextSelected = selected === items.length - 1 ? 0 : selected + 1;
-        this.setState({ selectedItem: nextSelected });
-        break;
-      default:
-        this.setState({ command: this.state.command + e.key });
-        break;
-    }
-  }
-
-  render() {
-    // Define the absolute position before rendering
-    const x = this.props.position.x;
-    const y = this.props.position.y - MENU_HEIGHT;
-    const positionAttributes = { top: y, left: x };
-
-    return (
-      <div className="context-menu" style={positionAttributes}>
-      <div className="menu">
-        <p className="contextmenu-add">Add Block</p>
-        <p className="contextmenu-filter">Keep typing to filter, or escaping to exit </p>
-        <p className="contextmenu-keyword">Filtering keyword </p>
-        {this.state.items.map((item, key) => {
-          const selectedItem = this.state.selectedItem;
-          const isSelected = this.state.items.indexOf(item) === selectedItem;;
-          return (
-            <div
-              className={isSelected ? "Selected" : null}
-              key={key}
-              role="button"
-              tabIndex="0"
-              onClick={() => this.props.onSelect(item.tag)}
-            >
-              <div className="contextmenu-text">
-                <div>
-                  <RxText style={{fontSize:'38px', color:'grey', paddingRight:'10px' }}/> 
-                </div>
-                <div>
-                  <p className="contextmenu-item">{item.label}</p>
-                  <span className="contextmenu-shortcut">Shortcut: type # + space</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+  return (
+    <div
+      className="context-menu"
+      style={{ top: position.y - 20, left: position.x }}
+    >
+      <div className="contextmenu-title">Add Block</div>
+      <input
+        type="text"
+        value={command}
+        onChange={(e) => setCommand(e.target.value)}
+        placeholder="Search blocks..."
+        className="contextmenu-input"
+        autoFocus
+      />
+      {items.map((item, index) => (
+        <div
+          key={item.id}
+          className={`contextmenu-item ${index === selectedItem ? "selected" : ""}`}
+          onClick={() => onSelect(item.tag)}
+        >
+          <div className="contextmenu-icon">{item.icon}</div>
+          <div>
+            <div className="contextmenu-label">{item.label}</div>
+            <div className="contextmenu-shortcut">Type /{item.label.toLowerCase()}</div>
+          </div>
+        </div>
+      ))}
     </div>
-    );
-  }
-}
+  );
+};
 
 export default ContextMenu;

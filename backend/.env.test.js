@@ -1,0 +1,9 @@
+PG_USER=your_pg_user 
+PG_HOST=localhost 
+PG_DATABASE=notion_clone 
+PG_PASSWORD=your_pg_password 
+PG_PORT=5432 
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/service-account-key.json 
+GCS_BUCKET=your-gcs-bucket-name 
+PORT=3000 
+NODE_ENV=production

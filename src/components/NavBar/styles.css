@@ -1,23 +1,75 @@
+/* Navbar Styling */
 .navbar {
-  margin: 25px;
+  margin: 24px;
+  padding: 12px 24px;
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
+  align-items: center;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
+
+.left-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .left-nav {
-  color: grey;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .nav-link {
-  padding: 0 10px 0 10px;
+  padding: 0 6px;
+  color: #555;
+  transition: color 0.2s ease;
 }
-.navleft-link {
-  padding: 0 25px 0 25px;
+
+.nav-link:hover {
+  color: #000;
 }
-.left-content{
+
+.navbar-right .right-content {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #6c757d;
+}
+
+.navright-link {
+  padding: 4px 10px;
+  color: #555;
+  transition: color 0.2s ease;
+}
+
+.navright-link:hover {
+  color: #000;
 }
 
 .publish {
-  color:blue
+  color: #007bff;
+  font-weight: 500;
+}
+
+.icon {
+  font-size: 16px;
+}
+
+.lock {
+  color: grey;
+}
+
+.divider {
+  font-size: 18px;
+  color: lightgray;
+}
+
+.dropdown {
+  color: #007bff;
 }

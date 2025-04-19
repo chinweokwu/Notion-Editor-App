@@ -4,26 +4,15 @@ import {RxText} from 'react-icons/rx'
 
 const MENU_HEIGHT = -25;
 const allowedTags = [
-  {
-    id: "page-title",
-    tag: "h1",
-    label: "Page Title"
-  },
-  {
-    id: "heading",
-    tag: "h2",
-    label: "Heading"
-  },
-  {
-    id: "subheading",
-    tag: "h3",
-    label: "Subheading"
-  },
-  {
-    id: "paragraph",
-    tag: "p",
-    label: "Paragraph"
-  }
+  { id: "page-title", tag: "h1", label: "Page Title", icon: <BiHeading size={26} /> },
+  { id: "heading", tag: "h2", label: "Heading", icon: <BiHeading size={24} /> },
+  { id: "subheading", tag: "h3", label: "Subheading", icon: <BiHeading size={20} /> },
+  { id: "paragraph", tag: "p", label: "Paragraph", icon: <PiParagraphFill size={24} /> },
+  { id: "blockquote", tag: "blockquote", label: "Blockquote", icon: <RxQuote size={22} /> },
+  { id: "unordered-list", tag: "ul", label: "Unordered List", icon: <RxListBullet size={22} /> },
+  { id: "ordered-list", tag: "ol", label: "Ordered List", icon: <RxListBullet size={22} /> },
+  { id: "code", tag: "code", label: "Code Block", icon: <RxCode size={22} /> },
+  { id: "divider", tag: "hr", label: "Divider", icon: <RxDividerHorizontal size={22} /> }
 ];
 
 const ContextMenu = (props) => {
